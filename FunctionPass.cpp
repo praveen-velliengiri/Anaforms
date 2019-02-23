@@ -1,14 +1,4 @@
-// Write a FP, to find which BB has many instructions
-// count precedessor, successor of BB
 
-/*
-1. Understand Function IR representation
-2. Ordering of BB
-3. Create CFG for the function
-4. Create / delete BB
-5. Find critical edges in function
-6. some examples in Util 
-*/
 #include "llvm/IR/PassManager.h"
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Passes/PassPlugin.h"
@@ -89,15 +79,6 @@ struct HelloNewPass : public llvm::PassInfoMixin<HelloNewPass>
     }
 };
 
-struct PrintCE : public llvm::PassInfoMixin<PrintCE>
-{
-    llvm::PreservedAnalyses run (llvm::Function& F,llvm::FunctionAnalysisManager& FAM)
-    {
-        F.eraseFromParent();
-        return llvm::PreservedAnalyses::all();
-    }
-};
-
 // Pass registration - why extern "C" 
 extern "C"::llvm::PassPluginLibraryInfo   LLVM_ATTRIBUTE_WEAK
 // This function the entry point interface used by the driver 
@@ -112,28 +93,6 @@ llvmGetPassPluginInfo(){
             [](llvm::StringRef PassName,llvm::FunctionPassManager& FPM,llvm::ArrayRef<llvm::PassBuilder::PipelineElement>){
                 if (PassName == "hello-new-pm-pass"){
                     FPM.addPass(HelloNewPass());
-                    return true;
-                }
-                return false;
-            }
-        );
-    }
-};
-}
-
-extern "C"::llvm::PassPluginLibraryInfo   LLVM_ATTRIBUTE_WEAK
-// This function the entry point interface used by the driver 
-llvmGetPassPluginInfo(){
-    return{ 
-        // This constructs and returns a instance of PassPluginLibraryInfo 
-    LLVM_PLUGIN_API_VERSION, "PrintCE","v0.1",
-
-    //What is a callback-style of programming ?
-    [](llvm::PassBuilder& PB) { // callback to register pass
-        PB.registerPipelineParsingCallback(
-            [](llvm::StringRef PassName,llvm::FunctionPassManager& FPM,llvm::ArrayRef<llvm::PassBuilder::PipelineElement>){
-                if (PassName == "delete"){
-                    FPM.addPass(PrintCE());
                     return true;
                 }
                 return false;

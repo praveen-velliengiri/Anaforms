@@ -80,4 +80,4 @@ namespace {
 }
 
 char cfgpass::ID  = 'c';
-static llvm::RegisterPass<cfgpass> CF("cfg","print prev and next nodes");
+static llvm::RegisterPass<cfgpass> CF("cfg","Travel and print ");
